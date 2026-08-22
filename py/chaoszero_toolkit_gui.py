@@ -843,11 +843,13 @@ class ChaosZeroToolkit(ctk.CTk):
                     js_dir = os.path.join(SCRIPT_DIR, "javascript")
                 
                 # 需要替换的 JS 文件列表
+                # 仅替换 init.js：加速器/动画跳过逻辑完全自包含在 init.js 中，
+                # title.js/pre_data.js/title_popups.js 不引用任何加速器相关的全局变量。
+                # 之前整体覆盖这三个文件会用工具打包时的旧版本覆盖玩家本地已被官方
+                # 更新过的版本，导致入口协议（queryEntry/handleEntryResult）解析
+                # 服务器返回数据失败，被误判为客户端过期，弹出"请更新最新客户端"。
                 js_replace_files = [
                     "init.js",
-                    "title.js",
-                    "pre_data.js",
-                    "title_popups.js",
                 ]
                 
                 if os.path.exists(bundle_path) and os.path.isdir(js_dir):
